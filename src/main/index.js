@@ -40,6 +40,9 @@ app.on("ready", () => {
   ipcMain.handle("setStoreValue", (_event, key, value) => {
     return store.set(key, value);
   });
+  ipcMain.on("playerHotkey", (_event, keyCode) => {
+    sendPlayerHotkey(keyCode);
+  });
   const windowBounds = store.get("window.bounds", { width: defaultWindowWidth, height: defaultWindowHeight });
   win.setBounds(windowBounds);
 
@@ -105,4 +108,49 @@ function getWindowBackgroudColor() {
   } else {
     return "#ffffff";
   }
+}
+
+function sendPlayerHotkey(keyCode) {
+  if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) {
+    return;
+  }
+
+  if (typeof keyCode !== "string") return;
+  const normalizedKeyCode = keyCode.trim().toUpperCase();
+  if (!normalizedKeyCode) return;
+
+  try {
+    win.webContents.sendInputEvent({ type: "keyDown", keyCode: normalizedKeyCode });
+    if (normalizedKeyCode.length === 1) {
+      win.webContents.sendInputEvent({ type: "char", keyCode: normalizedKeyCode.toLowerCase() });
+    }
+    win.webContents.sendInputEvent({ type: "keyUp", keyCode: normalizedKeyCode });
+  } catch (error) {
+    console.error(`[playerHotkey] failed to send key "${normalizedKeyCode}"`, error);
+  }
+
+  const keyboardCode = normalizedKeyCode.length === 1 ? `Key${normalizedKeyCode}` : normalizedKeyCode;
+  const key = normalizedKeyCode.length === 1 ? normalizedKeyCode.toLowerCase() : normalizedKeyCode;
+  const keyCodeNumber = normalizedKeyCode.length === 1 ? normalizedKeyCode.charCodeAt(0) : undefined;
+
+  const script = `
+    (() => {
+      const target = document.activeElement || document.body || document;
+      const eventInit = {
+        key: ${JSON.stringify(key)},
+        code: ${JSON.stringify(keyboardCode)},
+        bubbles: true,
+        cancelable: true
+      };
+      if (${typeof keyCodeNumber === "number"}) {
+        eventInit.keyCode = ${keyCodeNumber || 0};
+        eventInit.which = ${keyCodeNumber || 0};
+      }
+      target.dispatchEvent(new KeyboardEvent("keydown", eventInit));
+      target.dispatchEvent(new KeyboardEvent("keyup", eventInit));
+    })();
+  `;
+  win.webContents.executeJavaScript(script, true).catch((error) => {
+    console.error(`[playerHotkey] JS fallback failed for key "${normalizedKeyCode}"`, error);
+  });
 }

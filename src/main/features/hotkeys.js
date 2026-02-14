@@ -2,17 +2,31 @@ const { app, globalShortcut, systemPreferences } = require("electron");
 const { getTrackMetaData } = require("./playerMetaData");
 const { showLoveNotification, showTrackNotification } = require("./notifications");
 
-if (systemPreferences.isTrustedAccessibilityClient(false)) {
-  app.on("will-quit", () => {
-    globalShortcut.unregisterAll();
-  });
-  registerCustomShortcuts();
-}
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
+});
+
+registerShortcuts();
 
 exports.reloadShortcuts = () => {
   globalShortcut.unregisterAll();
-  registerCustomShortcuts();
+  registerShortcuts();
 };
+
+function registerShortcuts() {
+  registerSystemMediaShortcuts();
+
+  if (!systemPreferences.isTrustedAccessibilityClient(false)) {
+    return;
+  }
+  registerCustomShortcuts();
+}
+
+function registerSystemMediaShortcuts() {
+  registerShortcut("MediaPlayPause", "togglePause");
+  registerShortcut("MediaNextTrack", "next");
+  registerShortcut("MediaPreviousTrack", "prev");
+}
 
 function registerCustomShortcuts() {
   const hotkeys = global.store.get("hotkeys", {});
@@ -37,6 +51,8 @@ function registerCustomShortcuts() {
   });
 
   registerGlobalHotkeys(hotkeys["mute_unmute"], "toggleMute");
+  registerGlobalHotkeys(hotkeys["repeat"], "toggleRepeat");
+  registerGlobalHotkeys(hotkeys["shuffle"], "toggleShuffle");
 
   registerGlobalHotkeys(hotkeys["track_info"], undefined, showTrackNotification);
 
@@ -52,8 +68,11 @@ function registerGlobalHotkeys(acceleratorArray, playerCmd, additionalCmd) {
 }
 
 function registerShortcut(accelerator, playerCmd, additionalCmd) {
-  globalShortcut.register(accelerator, () => {
+  const registered = globalShortcut.register(accelerator, () => {
     playerCmd && global.mainWindow && global.mainWindow.webContents.send("playerCmd", playerCmd);
     additionalCmd && additionalCmd();
   });
+  if (!registered) {
+    console.warn(`[hotkeys] failed to register accelerator "${accelerator}"`);
+  }
 }

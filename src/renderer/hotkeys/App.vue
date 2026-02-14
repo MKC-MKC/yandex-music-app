@@ -77,6 +77,8 @@ export default defineComponent({
           title: "Mute / Unmute",
           icon: "d-icon_volume-mute",
         },
+        { id: "repeat", title: "Repeat on/off", icon: "d-icon_repeat" },
+        { id: "shuffle", title: "Shuffle on/off", icon: "d-icon_shuffle" },
         { id: "play_pause", title: "Play / Pause", icon: "d-icon_play" },
         { id: "like_unlike", title: "Like / Unlike", icon: "d-icon_heart" },
         { id: "track_info", title: "Track Info", icon: "d-icon_notes" },
