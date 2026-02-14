@@ -14,10 +14,16 @@ global.mainWindow.on("focus", () => {
       "main",
       clientId
     )
-    .then(response => {
-      if (!clientId) {
-        clientId = response.clientID;
-        global.store.set("gaClientId", clientId);
-      }
+    .then((response) => {
+      if (clientId) return;
+
+      const resolvedClientId = response && typeof response.clientID === "string" ? response.clientID : undefined;
+      if (!resolvedClientId) return;
+
+      clientId = resolvedClientId;
+      global.store.set("gaClientId", clientId);
+    })
+    .catch((error) => {
+      console.warn("[ga] failed to send screen event", error && error.message ? error.message : error);
     });
 });

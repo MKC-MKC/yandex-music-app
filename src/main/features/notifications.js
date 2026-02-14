@@ -29,7 +29,10 @@ function showLoveNotification(loved) {
 }
 
 function createTrackNotification(titlePrefix) {
-  if (global.mainWindow.isFocused()) return;
+  if (!Notification.isSupported()) {
+    console.warn("[notifications] Notifications are not supported on this system");
+    return;
+  }
 
   const metaData = getTrackMetaData();
   if (!metaData.title) return;
@@ -48,6 +51,7 @@ function createTrackNotification(titlePrefix) {
 
   lastNotification = new Notification({
     title: title,
+    body: subtitle,
     subtitle: subtitle,
     icon: getCoverFilePath(),
     silent: true,

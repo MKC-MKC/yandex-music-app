@@ -9,7 +9,7 @@ mediaService.startService();
 ipcMain.on("changeTrack", (_event, { currentTrack }) => {
   trackToMetaData(currentTrack, (metaData) => {
     updateMetadata(metaData);
-    if (isNotificationsEnabled() && metaData.state == MediaService.STATES.PLAYING) {
+    if (isNotificationsEnabled()) {
       showTrackNotification();
     }
   });

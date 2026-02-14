@@ -2,6 +2,7 @@ const ipc = require("electron").ipcRenderer;
 
 const EXTERNAL_API_POLL_INTERVAL = 500;
 const EXTERNAL_API_MAX_RETRIES = 240;
+const FALLBACK_BRIDGE_POLL_INTERVAL = 1000;
 const PLAYER_CMD_FALLBACK_KEYS = {
   play: "K",
   pause: "K",
@@ -18,6 +19,9 @@ const PLAYER_CMD_FALLBACK_KEYS = {
 };
 
 let externalBridgeInitialized = false;
+let fallbackBridgeInitialized = false;
+let fallbackCurrentTrackKey;
+let fallbackCurrentPlayingState;
 
 document.addEventListener("DOMContentLoaded", () => {
   let bodyAttributesObserver = new MutationObserver((mutationsList) => {
@@ -31,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bodyAttributesObserver.observe(document.body, { attributes: true });
 
   initBackNavigationButton();
+  initFallbackBridge();
   waitForExternalAPI();
 });
 
@@ -231,7 +236,8 @@ function waitForExternalAPI(retry = 0) {
   }
 
   if (retry >= EXTERNAL_API_MAX_RETRIES) {
-    console.error("[preload] externalAPI is unavailable, player state sync is disabled");
+    console.warn("[preload] externalAPI is unavailable, fallback bridge is enabled");
+    initFallbackBridge();
     return;
   }
 
@@ -241,6 +247,7 @@ function waitForExternalAPI(retry = 0) {
 function initExternalBridge(externalAPI) {
   if (externalBridgeInitialized) return;
   externalBridgeInitialized = true;
+  initFallbackBridge();
 
   onExternalEvent(externalAPI, externalAPI.EVENT_READY, () => {
     ipc.send("playerIsReady");
@@ -294,4 +301,126 @@ function onExternalEvent(externalAPI, eventName, handler) {
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function initFallbackBridge() {
+  if (fallbackBridgeInitialized) return;
+  fallbackBridgeInitialized = true;
+
+  ipc.send("playerIsReady");
+
+  const initialState = getFallbackPlayerState();
+  ipc.send("initControls", {
+    currentTrack: initialState.currentTrack,
+    controls: initialState.controls,
+  });
+  ipc.send("changeControls", initialState);
+
+  syncFallbackPlayerState();
+  setInterval(syncFallbackPlayerState, FALLBACK_BRIDGE_POLL_INTERVAL);
+}
+
+function syncFallbackPlayerState() {
+  const state = getFallbackPlayerState();
+  const trackKey = getTrackKey(state.currentTrack);
+
+  if (trackKey && trackKey !== fallbackCurrentTrackKey) {
+    fallbackCurrentTrackKey = trackKey;
+    ipc.send("changeTrack", {
+      currentTrack: state.currentTrack,
+    });
+    ipc.send("changePlaylist", {
+      currentTrack: state.currentTrack,
+      playlist: [],
+    });
+  }
+
+  if (typeof state.progress.position === "number" && typeof state.progress.duration === "number") {
+    ipc.send("changeProgress", state.progress);
+  }
+
+  if (state.currentTrack && fallbackCurrentPlayingState !== state.isPlaying) {
+    fallbackCurrentPlayingState = state.isPlaying;
+    ipc.send("changeState", {
+      isPlaying: state.isPlaying,
+      currentTrack: state.currentTrack,
+    });
+  }
+}
+
+function getFallbackPlayerState() {
+  const mediaMetadata = getMediaSessionMetadata();
+  const audio = getAudioElement();
+
+  const title = cleanText(mediaMetadata?.title);
+  const artist = cleanText(mediaMetadata?.artist);
+  const album = cleanText(mediaMetadata?.album);
+  const hasUsableTrackMeta = isUsableTrackMeta(title, artist);
+
+  let duration = Number.isFinite(audio?.duration) ? audio.duration : 0;
+  if (!duration && Number.isFinite(mediaMetadata?.duration)) {
+    duration = mediaMetadata.duration;
+  }
+
+  const position = Number.isFinite(audio?.currentTime) ? audio.currentTime : 0;
+  const isPlaying = !!(audio && !audio.paused && !audio.ended);
+
+  const currentTrack = hasUsableTrackMeta
+    ? {
+      title,
+      artists: [{ title: artist || "" }],
+      album: { title: album || "", cover: undefined },
+      duration: duration || 0,
+      link: `/track/fallback-${hashCode(`${title}|${artist}|${album}`)}`,
+      liked: false,
+      disliked: false,
+    }
+    : null;
+
+  return {
+    currentTrack,
+    isPlaying,
+    progress: {
+      position,
+      duration: duration || 0,
+    },
+    controls: {
+      next: true,
+      prev: true,
+    },
+  };
+}
+
+function getMediaSessionMetadata() {
+  if (!navigator.mediaSession || !navigator.mediaSession.metadata) return null;
+  return navigator.mediaSession.metadata;
+}
+
+function getAudioElement() {
+  return document.querySelector("audio");
+}
+
+function cleanText(value) {
+  if (typeof value !== "string") return "";
+  return value.trim();
+}
+
+function getTrackKey(track) {
+  if (!track || !track.title) return "";
+  const artist = track.artists && track.artists[0] ? track.artists[0].title : "";
+  const album = track.album ? track.album.title : "";
+  return `${track.title}|${artist}|${album}`;
+}
+
+function isUsableTrackMeta(title, artist) {
+  if (!title) return false;
+  return !!artist || title.length > 3;
+}
+
+function hashCode(input) {
+  let hash = 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (Math.imul(31, hash) + input.charCodeAt(index)) | 0;
+  }
+  return Math.abs(hash);
 }
