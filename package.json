@@ -3,11 +3,11 @@
   "version": "1.9.3",
   "author": "juvirez",
   "description": "just webview for yandex music with native features",
-  "homepage": "https://yandex-music.juvs.dev",
+  "homepage": "https://github.com/MKC-MKC/yandex-music-app",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/juvirez/yandex-music-app.git"
+    "url": "https://github.com/MKC-MKC/yandex-music-app.git"
   },
   "main": "src/main/index.js",
   "scripts": {

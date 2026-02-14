@@ -15,13 +15,13 @@ const menu = Menu.buildFromTemplate([
       {
         label: i18n.__("Website"),
         click() {
-          shell.openExternal("https://yandex-music.juvs.dev");
+          shell.openExternal("https://github.com/MKC-MKC/yandex-music-app");
         },
       },
       {
         label: i18n.__("GitHub"),
         click() {
-          shell.openExternal("https://github.com/juvirez/yandex-music-app");
+          shell.openExternal("https://github.com/MKC-MKC/yandex-music-app");
         },
       },
       { type: "separator" },
