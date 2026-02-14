@@ -1,17 +1,45 @@
 # Яндекс Музыка для Mac OS
 
-[![GitHub all releases](https://img.shields.io/github/downloads/juvirez/yandex-music-app/total)](https://github.com/juvirez/yandex-music-app/releases)
+[Это репо форк](https://github.com/juvirez/yandex-music-app) неофициального приложение Яндекс Музыки с исправлениями глобальных сочетаний клавиш.
 
-Неофициальное приложение с нативными фичами
+### Обратите внимание, что здесь исправлены только сочетания клавиш!
 
-- **Поддержка медиа клавиш** – управляй медиа кнопками, тачбаром или AirPods
-- **Системные уведомления** – настраиваемые нотификации при смене трека
-- **Глобальные горячие клавиши** - лайкай треки находясь в другом приложении
-- **Dock и Tray меню** – просматривай треклист и управляй плеером не заходя в приложение
+> Это приложение подписывается с тестовой подписью разработчика и может работать не так как ожидали.
 
-Скачать последнюю версию:
+### Установка
 
-- [для Mac Intel](https://github.com/juvirez/yandex-music-app/releases/download/v1.8.1/Yandex-Music-Unofficial-1.8.1.dmg)
-- [для Mac M1 (ARM)](https://github.com/juvirez/yandex-music-app/releases/download/v1.8.1/Yandex-Music-Unofficial-1.8.1-arm64.dmg)
+Скачать приложение по ссылкам ниже и переташить в папку "Программы" / "Applications"
 
-Или через brew: `brew install --cask yandex-music-unofficial`
+---
+
+# Если не открывается программа или перестала открываться:
+
+Выполните эти две команды:
+
+#### ❯ Рекурсивное удаление атрибутов.
+
+```zsh
+sudo xattr -cr /Applications/Yandex\ Music\ Unofficial.app
+```
+
+#### ❯ Подписываем приложение тестовой подписью.
+
+```zsh
+sudo codesign --force --deep --sign - /Applications/Yandex\ Music\ Unofficial.app
+```
+
+---
+
+## Скачать
+
+Сейчас есть две версии приложения.
+
+- 1.9.2 – С новым Electron 27
+  - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2-arm64.dmg)
+  - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2.dmg)
+
+- 1.9.1 – С старым Electron 19
+    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1-arm64.dmg)
+    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1.dmg)
+
+В двух версиях исправлены сочетания клавиш.
