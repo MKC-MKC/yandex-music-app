@@ -4,3 +4,6 @@ build
 src/renderer/compiled
 /Makefile
 .yarn
+DS_Store
+.DS_Store
+_.DS_Store
