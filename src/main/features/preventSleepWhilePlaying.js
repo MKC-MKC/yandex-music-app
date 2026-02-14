@@ -1,4 +1,4 @@
-const { ipcMain, powerSaveBlocker } = require("electron");
+const { ipcMain, powerMonitor, powerSaveBlocker } = require("electron");
 
 let powerSaveBlockerId = null
 
@@ -12,3 +12,22 @@ ipcMain.on("changeState", (_event, state) => {
     powerSaveBlockerId = null;
   }
 });
+
+powerMonitor.on("suspend", () => {
+  pausePlayback();
+  stopPowerSaveBlocker();
+});
+
+function pausePlayback() {
+  const win = global.mainWindow;
+  if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) {
+    return;
+  }
+  win.webContents.send("playerCmd", "pause");
+}
+
+function stopPowerSaveBlocker() {
+  if (powerSaveBlockerId === null) return;
+  powerSaveBlocker.stop(powerSaveBlockerId);
+  powerSaveBlockerId = null;
+}

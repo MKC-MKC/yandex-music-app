@@ -32,14 +32,20 @@ sudo codesign --force --deep --sign - /Applications/Yandex\ Music\ Unofficial.ap
 
 ## Скачать
 
-Сейчас есть две версии приложения.
+Сейчас есть несколько версий приложения.
+Во всех версиях исправлены глобальные сочетания клавиш.
+
+- Последнюю версию смотрите в релизах:
+    - [Открыть релизы](https://github.com/MKC-MKC/yandex-music-app/releases)
+
+- 1.9.3 – С новым Electron 27 и остановкой музыки при (сне / закрытии крышки).
+    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.3/Yandex.Music.Unofficial-1.9.3-arm64.dmg)
+    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.3/Yandex.Music.Unofficial-1.9.3.dmg)
 
 - 1.9.2 – С новым Electron 27
-  - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2-arm64.dmg)
-  - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2.dmg)
+    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2-arm64.dmg)
+    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2.dmg)
 
 - 1.9.1 – С старым Electron 19
     - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1-arm64.dmg)
     - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1.dmg)
-
-В двух версиях исправлены сочетания клавиш.
