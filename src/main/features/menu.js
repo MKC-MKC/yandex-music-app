@@ -142,6 +142,19 @@ function createSettings(isMenuBar) {
     },
   };
 
+  const disableWaveAnimationOption = {
+    label: i18n.__("Disable wave animation"),
+    type: "checkbox",
+    checked: global.store.get("disable_wave_animation", false),
+    click(menuItem) {
+      global.store.set("disable_wave_animation", menuItem.checked);
+      if (global.mainWindow && !global.mainWindow.isDestroyed()) {
+        showLoader();
+        global.mainWindow.reload();
+      }
+    },
+  };
+
   return [
     {
       label: i18n.__("Enable notifications"),
@@ -159,6 +172,7 @@ function createSettings(isMenuBar) {
         global.store.set("sync-theme", menuItem.checked);
       },
     },
+    disableWaveAnimationOption,
     (isMenuBar) ? undefined : showMenuBarIconOption,
     {
       label: i18n.__("Enable Discord rich presence"),
