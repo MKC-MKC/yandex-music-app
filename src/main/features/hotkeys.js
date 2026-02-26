@@ -16,7 +16,10 @@ exports.reloadShortcuts = () => {
 function registerShortcuts() {
   registerSystemMediaShortcuts();
 
-  if (!systemPreferences.isTrustedAccessibilityClient(false)) {
+  const accessibilityGranted = systemPreferences.isTrustedAccessibilityClient(false);
+  if (!accessibilityGranted) {
+    console.warn("[hotkeys] Accessibility permission is required for custom global shortcuts");
+    systemPreferences.isTrustedAccessibilityClient(true);
     return;
   }
   registerCustomShortcuts();
