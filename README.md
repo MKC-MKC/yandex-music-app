@@ -39,6 +39,10 @@ sudo codesign --force --deep --sign - /Applications/Yandex\ Music\ Unofficial.ap
 - Последнюю версию смотрите в релизах:
     - [Открыть релизы](https://github.com/MKC-MKC/yandex-music-app/releases)
 
+- 1.9.5 – Отключение "Волны", фикс остановки музыки при закрытии крышки и пр.
+    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.5/Yandex.Music.Unofficial-1.9.5-arm64.dmg)
+    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.5/Yandex.Music.Unofficial-1.9.5.dmg)
+
 - 1.9.4 – Пофиксил уведомления.
     - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.4/Yandex.Music.Unofficial-1.9.4-arm64.dmg)
     - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.4/Yandex.Music.Unofficial-1.9.4.dmg)
