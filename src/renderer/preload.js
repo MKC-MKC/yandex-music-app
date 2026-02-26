@@ -3,6 +3,7 @@ const ipc = require("electron").ipcRenderer;
 const EXTERNAL_API_POLL_INTERVAL = 500;
 const EXTERNAL_API_MAX_RETRIES = 240;
 const FALLBACK_BRIDGE_POLL_INTERVAL = 1000;
+const SLEEP_STOP_GUARD_MS = 4000;
 const PLAYER_CMD_FALLBACK_KEYS = {
   play: "K",
   pause: "K",
@@ -22,6 +23,8 @@ let externalBridgeInitialized = false;
 let fallbackBridgeInitialized = false;
 let fallbackCurrentTrackKey;
 let fallbackCurrentPlayingState;
+let sleepStopGuardUntil = 0;
+let sleepStopGuardInstalled = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   let bodyAttributesObserver = new MutationObserver((mutationsList) => {
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   bodyAttributesObserver.observe(document.body, { attributes: true });
 
+  installSleepStopBridge();
   initBackNavigationButton();
   initFallbackBridge();
   waitForExternalAPI();
@@ -47,6 +51,12 @@ ipc.on("playerCmd", (_event, cmd) => {
       break;
     case "pause":
       runCommandWithFallback(cmd, () => callExternal("togglePause", true));
+      break;
+    case "sleepPause":
+      pauseForSleep();
+      break;
+    case "sleepPauseRelease":
+      releaseSleepStopGuard();
       break;
     case "love":
       runCommandWithFallback(cmd, () => {
@@ -210,6 +220,97 @@ function getVolume() {
 
 function isPlaying() {
   return !!invokeExternal("isPlaying");
+}
+
+function pauseForSleep() {
+  let handled = false;
+
+  enableSleepStopGuard();
+
+  handled = callExternal("pause") || handled;
+
+  const mediaElements = document.querySelectorAll("audio,video");
+  mediaElements.forEach((mediaElement) => {
+    try {
+      if (!mediaElement.paused) {
+        mediaElement.pause();
+      }
+      handled = true;
+    } catch (error) {
+      console.error("[playerCmd] sleepPause fallback failed", error);
+    }
+  });
+
+  return handled;
+}
+
+function enableSleepStopGuard() {
+  sleepStopGuardUntil = Math.max(sleepStopGuardUntil, Date.now() + SLEEP_STOP_GUARD_MS);
+  if (sleepStopGuardInstalled) return;
+  sleepStopGuardInstalled = true;
+
+  document.addEventListener("play", (event) => {
+    if (Date.now() > sleepStopGuardUntil) return;
+    const target = event.target;
+    if (!(target instanceof HTMLMediaElement)) return;
+
+    try {
+      target.pause();
+    } catch (_) {}
+  }, true);
+
+  const onUserAction = (event) => {
+    if (!event || !event.isTrusted) return;
+    if (Date.now() > sleepStopGuardUntil) return;
+    sleepStopGuardUntil = 0;
+    ipc.send("sleepPauseUserAction", { type: event.type });
+  };
+  document.addEventListener("pointerdown", onUserAction, true);
+  document.addEventListener("touchstart", onUserAction, true);
+  document.addEventListener("keydown", onUserAction, true);
+
+  if (globalThis.HTMLMediaElement && globalThis.HTMLMediaElement.prototype) {
+    const originalPlay = globalThis.HTMLMediaElement.prototype.play;
+    if (typeof originalPlay === "function") {
+      globalThis.HTMLMediaElement.prototype.play = function patchedPlay(...args) {
+        if (Date.now() > sleepStopGuardUntil) {
+          return originalPlay.apply(this, args);
+        }
+        try {
+          this.pause();
+        } catch (_) {}
+        return Promise.resolve();
+      };
+    }
+  }
+
+  if (globalThis.AudioContext && globalThis.AudioContext.prototype) {
+    const originalResume = globalThis.AudioContext.prototype.resume;
+    if (typeof originalResume === "function") {
+      globalThis.AudioContext.prototype.resume = function patchedResume(...args) {
+        if (Date.now() > sleepStopGuardUntil) {
+          return originalResume.apply(this, args);
+        }
+        try {
+          if (typeof this.suspend === "function") {
+            return this.suspend();
+          }
+        } catch (_) {}
+        return Promise.resolve();
+      };
+    }
+  }
+}
+
+function releaseSleepStopGuard() {
+  sleepStopGuardUntil = 0;
+}
+
+function installSleepStopBridge() {
+  globalThis.__YM_SLEEP = {
+    pause: pauseForSleep,
+    release: releaseSleepStopGuard,
+  };
 }
 
 function runCommandWithFallback(cmd, handler) {
