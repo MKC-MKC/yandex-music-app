@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "name": "Build",
+      "icon": "package_",
+      "command": "npm run build"
+    }
+  ]
+}
