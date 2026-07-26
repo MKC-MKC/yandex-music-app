@@ -20,25 +20,21 @@ const ADS_CSS = `
 // Селекторы для "волны"/vibe-анимаций.
 // noinspection SpellCheckingInspection
 const WAVE_SELECTORS = [
-	"[class*='VibeAnimation_']",
-	"[class*='VibeBlock_vibeAnimation']",
+	"[class*='vibe' i][class*='animation' i]",
 	"[class*='TimecodeGroup_timecode_current_animation']",
 	"[class*='NavbarDesktopAnimatedBar_root']",
 ];
 
 // noinspection SpellCheckingInspection
 const WAVE_CSS = `
-  [class*="VibeAnimation_"],
-  [class*="VibeBlock_vibeAnimation"],
+  [class*="vibe" i][class*="animation" i],
   [class*="TimecodeGroup_timecode_current_animation"],
   [class*="NavbarDesktopAnimatedBar_root"] {
     display: none !important;
   }
 
-  [class*="VibeAnimation_"],
-  [class*="VibeAnimation_"] *,
-  [class*="VibeBlock_vibeAnimation"],
-  [class*="VibeBlock_vibeAnimation"] *,
+  [class*="vibe" i][class*="animation" i],
+  [class*="vibe" i][class*="animation" i] *,
   [class*="NavbarDesktopAnimatedBar_root"],
   [class*="NavbarDesktopAnimatedBar_root"] * {
     animation: none !important;
