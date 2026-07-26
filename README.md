@@ -39,22 +39,6 @@ sudo codesign --force --deep --sign - /Applications/Yandex\ Music\ Unofficial.ap
 - Последнюю версию смотрите в релизах:
     - [Открыть релизы](https://github.com/MKC-MKC/yandex-music-app/releases)
 
-- 1.9.5 – Отключение "Волны", фикс остановки музыки при закрытии крышки и пр.
-    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.5/Yandex.Music.Unofficial-1.9.5-arm64.dmg)
-    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.5/Yandex.Music.Unofficial-1.9.5.dmg)
-
-- 1.9.4 – Пофиксил уведомления.
-    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.4/Yandex.Music.Unofficial-1.9.4-arm64.dmg)
-    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.4/Yandex.Music.Unofficial-1.9.4.dmg)
-
-- 1.9.3 – С новым Electron 27 и остановкой музыки при (сне / закрытии крышки).
-    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.3/Yandex.Music.Unofficial-1.9.3-arm64.dmg)
-    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.3/Yandex.Music.Unofficial-1.9.3.dmg)
-
-- 1.9.2 – С новым Electron 27
-    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2-arm64.dmg)
-    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.2/Yandex.Music.Unofficial-1.9.2.dmg)
-
-- 1.9.1 – С старым Electron 19
-    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1-arm64.dmg)
-    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.1/Yandex.Music.Unofficial-1.9.1.dmg)
+- 1.9.6 – Фикс отключения "Волны"/Vibe.
+    - [для Mac Apple Silicon (ARM)](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.6/Yandex.Music.Unofficial-1.9.6-arm64.dmg)
+    - [для Mac Intel](https://github.com/MKC-MKC/yandex-music-app/releases/download/1.9.6/Yandex.Music.Unofficial-1.9.6.dmg)
